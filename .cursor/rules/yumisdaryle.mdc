@@ -1,0 +1,20 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+every file should under 3000 lines, once bypassed, create new file under same directory
+# Throttle rapid requests
+- maxRequests: 5          # allow up to 5 requests
+- interval: 60s           # per 60-second window
+- onExceedMessage: |
+    🚦 Rate limit exceeded.  
+    Please wait until the current 60 s window resets before sending more requests.
+
+# Implementation
+#  1. Count each chat/command+k invocation.
+#  2. If you go over 5 within 60 s, block further calls and show onExceedMessage.
+
+#  3. After 60 s from the first of that batch, reset the counter.
+
+Don't create meta file since unity will create it automatically.

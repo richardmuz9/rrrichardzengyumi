@@ -1,0 +1,9 @@
+# Cloudflare Pages configuration
+name = "yumi-website-builder"
+compatibility_date = "2024-06-14"
+
+[env.production]
+vars = { VITE_API_URL = "https://api.yumi77965.online", VITE_FRONTEND_URL = "https://yumi77965.online" }
+
+[env.preview]
+vars = { VITE_API_URL = "https://api-staging.yumi77965.online", VITE_FRONTEND_URL = "https://preview.yumi77965.online" } 

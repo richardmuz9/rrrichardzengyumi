@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:client && npm run build:server",
+    "build": "vite build",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --ssr src/entry-server.ts --outDir dist/server",
-    "preview": "cross-env NODE_ENV=production node server"
+    "build:ssr": "npm run build:client && npm run build:server",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",

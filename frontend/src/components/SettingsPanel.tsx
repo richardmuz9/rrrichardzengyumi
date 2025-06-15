@@ -21,13 +21,15 @@ export const SettingsPanel = () => {
   useEffect(() => {
     const loadModels = async () => {
       try {
+        setBackendStatus('checking')
         const models = await apiService.getModels()
         setAvailableModels(models)
         setBackendStatus('connected')
       } catch (error) {
         console.error('Failed to load models from backend, using fallback:', error)
         setBackendStatus('disconnected')
-        // Fallback models when backend is not available
+        
+        // Set fallback models immediately to prevent crashes
         const fallbackModels = {
           qwen: [
             'qwen-turbo',
@@ -46,10 +48,26 @@ export const SettingsPanel = () => {
             'gpt-3.5-turbo'
           ]
         }
-        setAvailableModels(fallbackModels)
+        
+        try {
+          setAvailableModels(fallbackModels)
+        } catch (setError) {
+          console.error('Error setting fallback models:', setError)
+        }
       }
     }
-    loadModels()
+    
+    // Add timeout to prevent hanging
+    const timeoutId = setTimeout(() => {
+      if (backendStatus === 'checking') {
+        console.warn('Backend check timed out, using fallback')
+        setBackendStatus('disconnected')
+      }
+    }, 10000) // 10 second timeout
+    
+    loadModels().finally(() => {
+      clearTimeout(timeoutId)
+    })
   }, [setAvailableModels])
 
   const handleProviderChange = (newProvider: 'openai' | 'openrouter' | 'qwen') => {

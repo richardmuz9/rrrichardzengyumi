@@ -27,8 +27,12 @@ export const ArchiveHistory: React.FC<ArchiveHistoryProps> = ({ onBack }) => {
 
   const loadArchives = () => {
     try {
-      const savedArchives = JSON.parse(localStorage.getItem('yumi-chat-archives') || '[]')
-      setArchives(savedArchives.reverse()) // Show newest first
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const savedArchives = JSON.parse(localStorage.getItem('yumi-chat-archives') || '[]')
+        setArchives(savedArchives.reverse()) // Show newest first
+      } else {
+        setArchives([])
+      }
     } catch (error) {
       console.error('Error loading archives:', error)
       setArchives([])
@@ -38,13 +42,25 @@ export const ArchiveHistory: React.FC<ArchiveHistoryProps> = ({ onBack }) => {
   const deleteArchive = (index: number) => {
     const updatedArchives = archives.filter((_, i) => i !== index)
     setArchives(updatedArchives)
-    localStorage.setItem('yumi-chat-archives', JSON.stringify(updatedArchives.reverse()))
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('yumi-chat-archives', JSON.stringify(updatedArchives.reverse()))
+      }
+    } catch (error) {
+      console.warn('Failed to update localStorage:', error)
+    }
     setSelectedArchive(null)
   }
 
   const clearAllArchives = () => {
     if (confirm('Are you sure you want to delete all chat archives? This cannot be undone.')) {
-      localStorage.removeItem('yumi-chat-archives')
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.removeItem('yumi-chat-archives')
+        }
+      } catch (error) {
+        console.warn('Failed to clear localStorage:', error)
+      }
       setArchives([])
       setSelectedArchive(null)
     }

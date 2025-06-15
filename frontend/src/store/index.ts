@@ -65,12 +65,17 @@ export const useStore = create<AppState>((set, get) => ({
       mode: state.mode
     }
     
-    // Save to localStorage
-    const existingArchives = JSON.parse(localStorage.getItem('yumi-chat-archives') || '[]')
-    existingArchives.push(archive)
-    localStorage.setItem('yumi-chat-archives', JSON.stringify(existingArchives))
-    
-    console.log('🗄️ Chat archived successfully!', archive)
+    // Save to localStorage with error handling
+    try {
+      const existingArchives = JSON.parse(localStorage.getItem('yumi-chat-archives') || '[]')
+      existingArchives.push(archive)
+      localStorage.setItem('yumi-chat-archives', JSON.stringify(existingArchives))
+      console.log('🗄️ Chat archived successfully!', archive)
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error)
+      // Fallback: just log the archive
+      console.log('🗄️ Chat archived (localStorage unavailable):', archive)
+    }
     
     // Optionally clear messages after archiving
     // set({ messages: [] })

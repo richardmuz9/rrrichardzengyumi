@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+dotenv.config()
 import OpenAI from 'openai'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import cookieParser from 'cookie-parser'
@@ -27,7 +28,7 @@ import {
   TokenPackageId 
 } from './stripe'
 
-dotenv.config()
+
 
 // Initialize database
 db.initialize().catch(console.error)

@@ -2,8 +2,27 @@ import Stripe from 'stripe'
 import { db } from './database'
 import { addTokens } from './auth'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil'
+// Lazy initialization of Stripe instance
+let stripeInstance: Stripe | null = null
+
+function getStripe(): Stripe {
+  if (!stripeInstance) {
+    const secretKey = process.env.STRIPE_SECRET_KEY
+    if (!secretKey) {
+      throw new Error('STRIPE_SECRET_KEY environment variable is not set')
+    }
+    stripeInstance = new Stripe(secretKey, {
+      apiVersion: '2025-05-28.basil'
+    })
+  }
+  return stripeInstance
+}
+
+// Export stripe as a getter
+export const stripe = new Proxy({} as Stripe, {
+  get(target, prop) {
+    return getStripe()[prop as keyof Stripe]
+  }
 })
 
 // Token packages with new pricing structure
@@ -340,6 +359,4 @@ export async function processWebhookEvent(event: Stripe.Event): Promise<void> {
     default:
       console.log('Unhandled webhook event type:', event.type)
   }
-}
-
-export { stripe } 
+} 
